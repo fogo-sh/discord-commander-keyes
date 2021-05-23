@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import { setup } from "./db";
 import { Command, Exec } from "./exec";
 import commands from "./commands";
+import machines from './machines';
 
 setup();
 config();
@@ -47,5 +48,7 @@ client.on("ready", () => {
 client.on("message", async (msg) => {
   await commands(client, msg, parse(client, msg));
 });
+
+machines(client);
 
 client.login(KEYES_TOKEN);
