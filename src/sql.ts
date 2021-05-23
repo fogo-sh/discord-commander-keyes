@@ -1,9 +1,9 @@
 export const init = `\
 CREATE TABLE IF NOT EXISTS commands (
-    name varchar PRIMARY KEY NOT NULL,
-    is_archived boolean NOT NULL DEFAULT false,
-    created_by string NOT NULL,
-    created_on datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+    name text PRIMARY KEY NOT NULL,
+    is_archived integer NOT NULL DEFAULT false,
+    created_by text NOT NULL,
+    created_on text NOT NULL DEFAULT CURRENT_TIMESTAMP
 );`;
 
 export const selectCommands = "SELECT * FROM commands;";
