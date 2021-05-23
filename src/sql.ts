@@ -1,7 +1,6 @@
 export const init = `\
 CREATE TABLE IF NOT EXISTS commands (
-    id SERIAL PRIMARY KEY,
-    name varchar NOT NULL,
+    name varchar PRIMARY KEY NOT NULL,
     is_archived boolean NOT NULL DEFAULT false,
     created_by string NOT NULL,
     created_on datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -9,4 +8,4 @@ CREATE TABLE IF NOT EXISTS commands (
 
 export const selectCommands = "SELECT * FROM commands;";
 
-export const insertCommand = `INSERT INTO commands (name, created_by) VALUES (?, ?)`;
+export const upsertCommand = `INSERT OR REPLACE INTO commands (name, created_by) VALUES (?, ?)`;

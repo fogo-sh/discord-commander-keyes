@@ -10,6 +10,7 @@ config();
 const client = new Client();
 
 const { KEYES_TOKEN } = process.env;
+
 const parse = (client: Client, msg: Message): Command => {
   if (!client.user) throw new Error("No user data");
 
@@ -18,8 +19,6 @@ const parse = (client: Client, msg: Message): Command => {
     const snowflake = msg.author.id;
 
     switch (command) {
-      case Exec.Run:
-        return { exec: Exec.Run, name };
       case Exec.Register:
         const attachment = msg.attachments.first()?.attachment;
         if (!attachment) {
@@ -45,8 +44,8 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user?.tag}!`);
 });
 
-client.on("message", (msg) => {
-  commands(client, msg, parse(client, msg));
+client.on("message", async (msg) => {
+  await commands(client, msg, parse(client, msg));
 });
 
 client.login(KEYES_TOKEN);

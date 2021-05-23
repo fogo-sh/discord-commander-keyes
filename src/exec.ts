@@ -2,7 +2,6 @@ import { BufferResolvable } from "discord.js";
 import { Stream } from "stream";
 
 export enum Exec {
-  Run = "run",
   Register = "register",
   Unregister = "unregister",
   Error = "error",
@@ -18,14 +17,9 @@ export type Register = {
   value: string | BufferResolvable | Stream;
 };
 
-type Unregister = {
+export type Unregister = {
   exec: Exec.Unregister;
   snowflake: Snowflake;
-  name: string;
-};
-
-type Run = {
-  exec: Exec.Run;
   name: string;
 };
 
@@ -38,4 +32,4 @@ type None = {
   exec: Exec.None;
 };
 
-export type Command = Register | Unregister | Run | None | Error;
+export type Command = Register | Unregister | None | Error;
