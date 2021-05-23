@@ -8,14 +8,18 @@ export default async (client: Client, msg: Message, command: Register) => {
     msg.reply("Please present a command name.");
     return;
   }
-  
-  getCommandByName(command.name).then((resolved) => {
-    if(resolved && resolved.createdBy === msg.author.id) {
-      msg.reply(`${command.name} is a registered command, and you didn't create it.`);
+
+  try {
+    const resolvedCommand = await getCommandByName(command.name);
+    if (resolvedCommand?.createdBy === msg.author.id) {
+      msg.reply(
+        `${command.name} is a registered command, and you didn't create it.`
+      );
       return;
     }
-  }).catch(() => console.log(`Registering new command ${command.name}`));
-
+  } catch {
+    console.log(`Registering new command ${command.name}`);
+  }
 
   register(command);
 };
