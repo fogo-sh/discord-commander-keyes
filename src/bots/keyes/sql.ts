@@ -9,4 +9,8 @@ CREATE TABLE IF NOT EXISTS commands (
 
 export const selectCommands = "SELECT * FROM commands;";
 
+export const selectSingleCommand = "SELECT * FROM commands WHERE name = ?;";
+
 export const upsertCommand = `INSERT OR REPLACE INTO commands (name, created_by, wasm) VALUES (?, ?, ?)`;
+
+export const deleteCommand = `DELETE FROM commands WHERE name IS ?`;

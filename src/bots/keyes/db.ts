@@ -1,6 +1,12 @@
 import { Database } from "sqlite3";
-import { Register, Snowflake } from "./exec";
-import { init, upsertCommand, selectCommands } from "./sql";
+import { Register, Snowflake, Unregister } from "./exec";
+import {
+  init,
+  upsertCommand,
+  selectCommands,
+  deleteCommand,
+  selectSingleCommand,
+} from "./sql";
 import fetch from "node-fetch";
 
 const db = new Database("./commands.db");
@@ -27,7 +33,8 @@ export const register = async ({ name, snowflake, value }: Register) => {
       if (res.headers.get("content-type") !== "application/wasm")
         throw new Error("Invalid file type.");
 
-      if (!WebAssembly.validate(buffer)) reject();
+      if (!WebAssembly.validate(buffer))
+        reject(new Error("That's not a WASM file."));
 
       res.body.on("error", reject);
 
@@ -36,12 +43,26 @@ export const register = async ({ name, snowflake, value }: Register) => {
           if (err) {
             reject(err);
           }
-          console.log("Updated 1 row.");
+          resolve(true);
         });
       });
     });
+  } else {
+    throw new Error("That's not a URL.");
   }
 };
+
+export const unregister = async ({ name }: Unregister) =>
+  new Promise((resolve, reject) =>
+    db.serialize(() => {
+      db.run(deleteCommand, name, (err) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(true);
+      });
+    })
+  );
 
 export const getCommands = (): Promise<CommandDB[]> =>
   new Promise((resolve, reject) => {
@@ -64,12 +85,22 @@ export const getCommands = (): Promise<CommandDB[]> =>
     });
   });
 
-export const getCommandByName = (name: string): Promise<CommandDB> =>
+export const getCommandByName = (name: string): Promise<CommandDB | null> =>
   new Promise((resolve, reject) => {
     db.serialize(() => {
-      db.get(selectCommands, [name], (err, row) => {
+      db.get(selectSingleCommand, name, (err, row) => {
         if (err) reject(err);
-        resolve(row);
+        if (row) {
+          resolve({
+            name: row.name,
+            wasm: row.wasm,
+            isArchived: row.is_archived,
+            createdBy: row.created_by,
+            createdOn: row.created_on,
+          });
+        } else {
+          resolve(null);
+        }
       });
     });
   });

@@ -1,6 +1,8 @@
 {
   "extends": "assemblyscript/std/assembly.json",
-  "include": [
-    "./**/*.ts"
-  ]
+  "compilerOptions": {
+    "composite": true
+  },
+  "references": [{ "path": "../../api" }],
+  "include": ["./**/*.ts", "../../api/discord.ts"]
 }

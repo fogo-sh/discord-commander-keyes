@@ -2,6 +2,7 @@ import { Client, Message } from "discord.js";
 import { Register } from "../exec";
 import { register } from "../db";
 import { getCommandByName } from "../db";
+import machines from "../machines";
 
 export default async (client: Client, msg: Message, command: Register) => {
   if (command.name === undefined) {
@@ -9,17 +10,26 @@ export default async (client: Client, msg: Message, command: Register) => {
     return;
   }
 
+  let updateMessage;
   try {
     const resolvedCommand = await getCommandByName(command.name);
-    if (resolvedCommand?.createdBy === msg.author.id) {
+    if (resolvedCommand && resolvedCommand.createdBy !== msg.author.id) {
       msg.reply(
         `${command.name} is a registered command, and you didn't create it.`
       );
       return;
     }
   } catch {
-    console.log(`Registering new command ${command.name}`);
+    updateMessage = msg.reply(`Updating ${command.name}...`);
   }
 
-  register(command);
+  try {
+    await register(command);
+    machines(client);
+    msg.reply(`${command.name} is registered 👍`);
+  } catch (error) {
+    msg.reply(`${error}`);
+  }
+
+  if (updateMessage) (await updateMessage).delete();
 };
